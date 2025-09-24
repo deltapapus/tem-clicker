@@ -1,0 +1,33 @@
+body{
+margin:0;
+height:100vh;
+background:black;
+font-family: 'Press Start 2P', monospace;
+color:white;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+
+.clicker{
+width: clamp(150px, 25vw, 300px);
+cursor:pointer;
+transition: transform 200ms ease, filter 200ms ease;
+}
+
+
+.clicker:hover{
+transform: scale(1.1);
+filter: brightness(1.2);
+}
+
+
+.counter{
+position: fixed;
+top:20px;
+left:20px;
+font-size:32px;
+color:white;
+text-shadow: 0 0 8px #fff, 0 0 12px #0ff;
+}
