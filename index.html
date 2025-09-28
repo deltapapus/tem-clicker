@@ -1,14 +1,75 @@
-
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Temmie Clicker v1.0</title>
+  <title>Temmie Clicker v3.0</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <style>
+  body{
+    margin:0;
+    height:100vh;
+    background:black;
+    font-family: 'Press Start 2P', monospace;
+    color:white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .clicker{
+    width: clamp(150px, 25vw, 300px);
+    cursor:pointer;
+    transition: transform 200ms ease, filter 200ms ease;
+  }
+
+  .clicker:hover{
+    transform: scale(1.1);
+    filter: brightness(1.2);
+  }
+
+  .counter{
+    position: fixed;
+    top:20px;
+    left:20px;
+    font-size:32px;
+    color:white;
+    text-shadow: 0 0 8px #fff, 0 0 12px #0ff;
+  }
+
+  .store {
+    margin-top: 20px;
+    background: #111;
+    border: 2px solid #0ff;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    width: clamp(200px, 50vw, 400px);
+  }
+
+  .store h2 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .item {
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0;
+    padding: 6px;
+    border: 1px solid #0ff;
+    cursor: pointer;
+    transition: background 200ms ease;
+  }
+
+  .item:hover {
+    background: #0ff3;
+  }
+
+  </style>
 </head>
 <body>
   <div class="counter" id="counter">0</div>
@@ -17,8 +78,125 @@
     <img src="SPOILER_8540b063b4e8b069ecc7a695bd353bda.webp" width="353" height="363" id="clicker" class="clicker" alt="Clicker" />
   </main>
 
-  <script src="script.js"></script>
+  <div class="store">
+    <h2>🛒 Tienda Temmie</h2>
+    <div class="item" onclick="buyPowerup('autoClick')">Autoclick (+1 click/seg) - 50</div>
+    <div class="item" onclick="buyPowerup('multiplier')">Multiplicador x2 - 200</div>
+    <div class="item" onclick="buyPowerup('bonus')">Bonus temporal (doble clicks 10s) - 100</div>
+    <div class="item" onclick="buyPowerup('college')">Temmie College (+10 clicks/seg) - 500</div>
+    <div class="item" onclick="buyPowerup('superMultiplier')">Super Multiplicador x3 - 2000</div>
+    <div class="item" onclick="buyPowerup('madness')">Racha de Locura (x5 clicks 5s) - 1500</div>
+    <div class="item" onclick="buyPowerup('army')">Ejército de Temmies (+50 clicks/seg) - 10000</div>
+    <div class="item" onclick="buyPowerup('godMode')">🌌 Modo Dios (x10 permanente) - 50000</div>
+  </div>
+
+<noscript>Puto de mierda activa javascriptttttttttt</noscript>
+
+<script>
+const clickBtn = document.getElementById('clicker');
+const counterEl = document.getElementById('counter');
+
+let count = 0;
+let autoClickers = 0;
+let multiplier = 1;
+let bonusActive = false;
+
+try {
+  const saved = localStorage.getItem('undertale_clicker_data');
+  if(saved){
+    const data = JSON.parse(saved);
+    count = data.count || 0;
+    autoClickers = data.autoClickers || 0;
+    multiplier = data.multiplier || 1;
+  }
+}catch(e){ console.warn('localStorage disabled', e); }
+
+counterEl.textContent = count;
+
+function saveGame(){
+  try{
+    localStorage.setItem('undertale_clicker_data', JSON.stringify({
+      count,
+      autoClickers,
+      multiplier
+    }));
+  }catch(e){}
+}
+
+function addClick(amount=1){
+  if(bonusActive) amount *= 2;
+  count += amount * multiplier;
+  counterEl.textContent = count;
+  saveGame();
+}
+
+clickBtn.addEventListener('click', ()=> addClick());
+
+// tecla espacio también cuenta
+window.addEventListener('keydown', (e)=>{
+  if(e.code === 'Space'){
+    e.preventDefault();
+    clickBtn.click();
+  }
+});
+
+// ---- Powerups ----
+function buyPowerup(type){
+  switch(type){
+    case 'autoClick':
+      if(count >= 50){ count -= 50; autoClickers++; }
+      break;
+
+    case 'multiplier':
+      if(count >= 200){ count -= 200; multiplier *= 2; }
+      break;
+
+    case 'bonus':
+      if(count >= 100){
+        count -= 100;
+        if(!bonusActive){
+          bonusActive = true;
+          setTimeout(()=> bonusActive = false, 10000);
+        }
+      }
+      break;
+
+    case 'college':
+      if(count >= 500){ count -= 500; autoClickers += 10; }
+      break;
+
+    case 'superMultiplier':
+      if(count >= 2000){ count -= 2000; multiplier *= 3; }
+      break;
+
+    case 'madness':
+      if(count >= 1500){
+        count -= 1500;
+        let oldMult = multiplier;
+        multiplier *= 5;
+        setTimeout(()=> multiplier = oldMult, 5000);
+      }
+      break;
+
+    case 'army':
+      if(count >= 10000){ count -= 10000; autoClickers += 50; }
+      break;
+
+    case 'godMode':
+      if(count >= 50000){ count -= 50000; multiplier *= 10; }
+      break;
+  }
+  counterEl.textContent = count;
+  saveGame();
+}
+
+// Autoclickers
+setInterval(()=>{
+  if(autoClickers > 0){
+    addClick(autoClickers);
+  }
+}, 1000);
+
+</script>
 </body>
 </html>
-
-
