@@ -107,7 +107,6 @@
     <div class="item" onclick="buyPowerup('multiplier')">Multiplicador x2 - 200 (máx 2)</div>
     <div class="item" onclick="buyPowerup('bonus')">Bonus temporal (doble clicks 10s) - 100</div>
     <div class="item" onclick="buyPowerup('college')">Temmie College (+5 clicks/seg) - 500</div>
-    <div class="item" onclick="buyPowerup('superMultiplier')">Super Multiplicador x3 - 2000 (único)</div>
     <div class="item" onclick="buyPowerup('madness')">Racha de Locura (x5 clicks 5s) - 1500</div>
     <div class="item" onclick="buyPowerup('army')">Ejército de Temmies (+20 clicks/seg) - 10000</div>
     <div class="item" onclick="buyPowerup('godMode')">🌌 Modo Dios (x10 permanente) - 50000 (único)</div>
@@ -259,14 +258,6 @@ function buyPowerup(type){
 
     case 'college':
       if(count >= 500){ count -= 500; autoClickers += 5; } // nerfeado a +5
-      break;
-
-    case 'superMultiplier':
-      if(count >= 2000 && !superMultiplierBought){
-        count -= 2000;
-        multiplier *= 3;
-        superMultiplierBought = true;
-      }
       break;
 
     case 'madness':
