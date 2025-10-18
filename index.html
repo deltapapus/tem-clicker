@@ -92,6 +92,54 @@
     text-shadow: 0 0 10px #ff2f2f;
   }
 
+  .popup {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.popup.hidden { display: none; }
+
+.popup-content {
+  background: #222;
+  padding: 20px;
+  border: 4px solid #0ff;
+  border-radius: 12px;
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+  color: white;
+  box-shadow: 0 0 15px #0ff;
+}
+.popup-content button {
+  margin-top: 15px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#discordInput {
+  padding: 8px;
+  font-size: 14px;
+  width: 90%;
+  max-width: 280px;
+  border: 2px solid #0ff;
+  border-radius: 6px;
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+}
+#sendUser {
+  margin-right: 10px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+
   </style>
 </head>
 <body>
@@ -100,6 +148,17 @@
   <main class="wrap">
     <img src="SPOILER_8540b063b4e8b069ecc7a695bd353bda.webp" width="353" height="363" id="clicker" class="clicker" alt="Clicker" />
   </main>
+  
+<div id="rewardSection" style="margin-top:60px; text-align:center;">
+  <input 
+    type="text" 
+    id="discordInput" 
+    placeholder="Tu ID o Username de Discord"
+    style="padding:6px; font-size:12px; width:220px; text-align:center; margin-bottom:10px;"
+  />
+  <br>
+  <button id="claimRole" disabled>🔑 Reclamar Rol</button>
+</div>
 
   <div class="store">
     <h2>🛒 Tienda Temmie</h2>
@@ -112,16 +171,58 @@
     <div class="item" onclick="buyPowerup('godMode')">🌌 Modo Dios (x10 permanente) - 50000 (único)</div>
   </div>
 
+
   <div class="cheat-overlay" id="cheatOverlay">
     <div class="cheat-message" id="cheatMsg">shat up hacke!!</div>
   </div>
 
 <noscript>Activa JavaScript para jugar.</noscript>
-
-<script>
+</body><script>
+const discordInput = document.getElementById("discordInput");
 const clickBtn = document.getElementById('clicker');
 const counterEl = document.getElementById('counter');
+const CHEAT_THRESHOLD = 1e15; // umbral para detectar números absurdos
 const cheatOverlay = document.getElementById('cheatOverlay');
+
+
+
+  function checkRoleEligibility() {
+    if (count >= 1000000) {
+      claimBtn.disabled = false;
+      claimBtn.classList.add("enabled");
+    }
+  }
+
+  // Aquí recién usas los eventos (ya existen las const)
+  clickBtn.addEventListener("click", () => {
+    count++;
+    counterEl.textContent = count;
+    checkRoleEligibility();
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if (e.code === "Space") {
+      e.preventDefault();
+      clickBtn.click();
+    }
+  });
+
+  // Evento del botón Reclamar
+  claimBtn.addEventListener("click", () => {
+    if (claimBtn.disabled) return;
+
+    const userValue = discordInput.value.trim();
+    if (!userValue) {
+      alert("Por favor escribe tu ID o Username de Discord");
+      return;
+    }
+
+    alert("🎉 Felicidades " + userValue + ", has reclamado tu rol!");
+    localStorage.setItem("roleUnlocked", "true");
+
+    claimBtn.disabled = true;
+    claimBtn.textContent = "Rol reclamado ✅";
+  });
 
 let count = 0;
 let autoClickers = 0;
@@ -133,7 +234,7 @@ let multiplierCount = 0;
 let superMultiplierBought = false;
 let godModeBought = false;
 
-const CHEAT_THRESHOLD = 1e15; // umbral para detectar números absurdos
+
 
 // Cargar juego
 try {
@@ -307,6 +408,5 @@ setInterval(()=>{
 
 // Inicializa la UI
 updateDisplay();
-</script>
-</body>
-</html>
+
+</script></html>
